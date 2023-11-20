@@ -8,7 +8,6 @@ pipeline {
             steps {
                 script {
                     // Clone and Build the App
-                    sh 'git pull /home/centos/jenkins-ansible-flask-1/'
                     sh 'ansible-playbook /home/centos/jenkins-ansible-flask-1/01-installations-flask.yml -i /home/centos/jenkins-ansible-flask-1/hosts.ini'
                 }
             }
