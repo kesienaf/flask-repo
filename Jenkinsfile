@@ -1,52 +1,29 @@
 pipeline {
     agent none
     stages {
-        stage('Install') {
+        stage('Clone Repo and Build') {
             agent {
                 label 'node-1'
             }
             steps {
-                echo 'Installations'
-                sh 'git pull /home/centos/mid-project-calculator/'
-                sh 'ansible-playbook /home/centos/mid-project-calculator/01-install.yml -i /home/centos/mid-project-calculator/hosts.ini'
-            }
-        }
-        stage('Build') {
-            agent {
-                label 'node-1'
-            }
-            steps {
-                echo 'Building the application'
-                // Define build steps here
-                sh 'ansible-playbook /home/centos/mid-project-calculator/03-build.yml -i /home/centos/mid-project-calculator/hosts.ini'
-            }
-        }
-        stage('Test') {
-            agent {
-                label 'node-1'
-            }
-            steps {
-                echo 'Running tests'
-                // Define test steps here
-                sh 'ansible-playbook /home/centos/mid-project-calculator/04-test.yml -i /home/centos/mid-project-calculator/hosts.ini'
                 script {
-                    echo 'Checking if files exist before stashing'
+                    // Clone and Build the App
+                    sh 'ansible-playbook /home/centos/jenkins-ansible-flask-1/01-installations-flask.yml -i /home/centos/jenkins-ansible-flask-1/hosts.ini'
                 }
             }
         }
-        stage('Deploy') {
+
+        stage('Deploy with Ansible') {
             agent {
                 label 'node-1'
             }
             steps {
-                echo 'Deploying the application'
-                // Define deployment steps here
-                sshagent(['node-1']) {
-                    sh "scp -o StrictHostKeyChecking=no centos@172.31.2.14:/path/to/checkout/target/*.war centos@172.31.8.22:/opt/tomcat/webapps/"
-                    }
-                sh 'ansible-playbook /home/centos/mid-project-calculator/07-deploy.yml -i /home/centos/mid-project-calculator/hosts.ini'
+                script {
+                    // Start the app
+                    sh 'ansible-playbook /home/centos/jenkins-ansible-flask-1/02-deploy-flask.yml -i /home/centos/jenkins-ansible-flask-1/hosts.ini'
             }
         }
+    }
     }
     post {
         success {
