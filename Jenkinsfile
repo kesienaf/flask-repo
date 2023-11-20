@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone Repo and Build') {
             agent {
-                label 'node-1'
+                label 'node-2'
             }
             steps {
                 script {
@@ -15,7 +15,7 @@ pipeline {
 
         stage('Deploy with Ansible') {
             agent {
-                label 'node-1'
+                label 'node-2'
             }
             steps {
                 script {
